@@ -21,7 +21,7 @@ import Home from './routes/home';
 const myMenu =
   <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" id="home_nav">
     <Container>
-      <Navbar.Brand href="#home">Ducky Doc</Navbar.Brand>
+      <Navbar.Brand href="/">Ducky Doc</Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="me-auto">

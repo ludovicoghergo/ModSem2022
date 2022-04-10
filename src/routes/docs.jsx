@@ -1,7 +1,9 @@
 export default function Docs() {
     return (
-        <main style={{ padding: "1rem 0" }}>
+        <div>
             <h2>Docs</h2>
-        </main>
+        </div>
+
+
     );
 }
