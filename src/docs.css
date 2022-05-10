@@ -3,4 +3,16 @@
     min-height: 80vh !important;
     width: 30% !important;
     left: 2.5vw;
+    display: inline-block;
+}
+
+#result_side {
+    padding-top: 5vh !important;
+    width: 60% !important;
+    display: inline-block;
+    padding-left: 5%;
+}
+
+.search_div {
+    display: flex;
 }

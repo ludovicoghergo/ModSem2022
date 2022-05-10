@@ -3,7 +3,7 @@ import '../docs.css'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-
+import Badge from 'react-bootstrap/Badge'
 
 import React, { useState, useEffect, createRef, useRef, useCallback, useMemo } from 'react';
 
@@ -31,6 +31,8 @@ export default function Home() {
     const [professor, setprofessor] = useState("");
     const [price, setprice] = useState(0);
     const [reviews, setreviews] = useState(0);
+
+    const [dbData, setdbData] = useState([])
 
 
 
@@ -69,13 +71,27 @@ export default function Home() {
         return query
     }
 
+    function cityQuery() {
+        let query = ""
+        if (city != "") {
+            query +=
+                " ?doc dd:talks_about ?course." +
+                " ?course dd:belongs_to_degree ?degree." +
+                " ?degree dd:has_department ?department." +
+                " ?department dd:has_school ?school." +
+                " ?school dd:located_in ?city." +
+                " ?city dd:name \"" + city + "\".";
+        }
+        return query
+    }
+
     function courseQuery() {
         let query = ""
         if (course != "") {
             query +=
                 " ?doc dd:talks_about ?course." +
                 " ?course dd:belongs_to_degree ?degree." +
-                " ?course dd:name \"" + course + "\".";
+                " ?course dd:course_name \"" + course + "\".";
         }
         return query
     }
@@ -94,7 +110,6 @@ export default function Home() {
 
     function revQuery(havingQuery, groupbyQuery, selectQuery) {
         let query = ""
-
         if (reviews != "") {
             selectQuery += "(AVG(?vote) as ?Average) "
             query +=
@@ -108,24 +123,58 @@ export default function Home() {
     }
 
 
-    function compQuery() {
 
-        let query = "" +
-            "PREFIX dd: <http://www.semanticweb.org/duckydoc#>" +
-            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
-            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-        let selectQuery = " SELECT ?doc ?nomedoc "
-        let whereQuery = "WHERE { ?doc dd:name ?nomedoc. "
-        let havingQuery = ""
-        let groupbyQuery = ""
-        let revsQuery = revQuery(havingQuery, groupbyQuery, selectQuery)
-        console.log(query + revsQuery[0] + whereQuery + userQuery() + schoolQuery() + revsQuery[3] + "}" + revsQuery[1] + revsQuery[2]
-        )
-        axios.get(`http://localhost:7200/repositories/provaludo?query=` + encodeURIComponent(query + revsQuery[0] + whereQuery + userQuery() + schoolQuery() + revsQuery[3] + "}" + revsQuery[1] + revsQuery[2]))
-            .then(res => {
-                console.log(res)
-            })
-    }
+    const compQuery =
+        async () => {
+            let query = "" +
+                "PREFIX dd: <http://www.semanticweb.org/duckydoc#>" +
+                "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
+                "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+            let selectQuery = " SELECT ?doc ?nomedoc "
+            let whereQuery = "WHERE { " +
+                "?doc rdf:type dd:File. " +
+                "?doc dd:name ?nomedoc. "
+            let havingQuery = ""
+            let groupbyQuery = ""
+            let revsQuery = revQuery(havingQuery, groupbyQuery, selectQuery)
+            let myfiles = []
+            console.log(query + revsQuery[0] + whereQuery + userQuery() + schoolQuery() + cityQuery() + depQuery() + courseQuery() + professorQuery() + revsQuery[3] + "}" + revsQuery[1] + revsQuery[2])
+            axios.get(`http://localhost:7200/repositories/provaludo?query=` + encodeURIComponent(query + revsQuery[0] + whereQuery + userQuery() + schoolQuery() + cityQuery() + depQuery() + courseQuery() + professorQuery() + revsQuery[3] + "}" + revsQuery[1] + revsQuery[2]))
+                .then(async (res) => {
+                    console.log(res.data.results.bindings)
+                    for (let i = 0; i < res.data.results.bindings.length; i++) {
+                        let name = res.data.results.bindings[i].nomedoc.value
+                        let tags = []
+                        let SPECIFIC_URL = "" +
+                            "PREFIX dd: <http://www.semanticweb.org/duckydoc#>" +
+                            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
+                            "PREFIX owl: <http://www.w3.org/2002/07/owl#>" +
+                            "PREFIX prov: <http://www.w3.org/ns/prov#>" +
+                            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
+                            "select ?name where {" +
+                            ' <' + res.data.results.bindings[i].doc.value + '> ' + "rdf:type ?o ." +
+                            "?o rdfs:label ?name." +
+                            "FILTER (?o != owl:NamedIndividual && ?o != prov:Entity ) .}"
+
+                        const resp = await axios.get(`http://localhost:7200/repositories/provaludo?query=` + encodeURIComponent(SPECIFIC_URL))
+                        console.log(resp.data.results.bindings)
+                        for (let j = 0; j < resp.data.results.bindings.length; j++) {
+                            if (resp.data.results.bindings[j].name["xml:lang"] == 'en') {
+                                tags.push(resp.data.results.bindings[j].name.value)
+                                console.log(resp.data.results.bindings[j].name.value)
+                            }
+
+                        }
+
+                        myfiles.push({ name: name, tags: tags })
+                    }
+                    console.log(myfiles)
+                    setdbData(myfiles)
+                }
+
+
+                )
+        }
 
 
     const search_sidebar =
@@ -159,7 +208,7 @@ export default function Home() {
 
                     <Form.Group className="mb-3" controlId="formBasicPassword">
                         <Form.Label>Course</Form.Label>
-                        <Form.Control value={course} type="text" placeholder="eg. ModSem" onChange={(e) =>
+                        <Form.Control value={course} type="text" placeholder="eg. Reti Neurali" onChange={(e) =>
                             setcourse(e.target.value)
                         } />
                     </Form.Group>
@@ -216,9 +265,7 @@ export default function Home() {
                     </div>
 
 
-                    <Button variant="primary" onClick={
-                        () => compQuery()
-                    }>
+                    <Button variant="primary" onClick={compQuery}>
                         Search
                     </Button>
                 </Form>
@@ -226,15 +273,31 @@ export default function Home() {
         </Card >;
 
 
+    const result_cards =
+        <div id="result_side">
+            {dbData.map((item, index) => (
+                <Card key={index}>
+                    <Card.Body>
+                        <Card.Title>{item.name}</Card.Title>
+                        <h6>
+                            {item.tags.map((tag, index) => (
+                                <Badge className="m-1" bg="secondary"> {tag} </Badge>
+                            ))}
+                        </h6>
+                    </Card.Body>
+                </Card>
+            ))
+            }
 
-
+        </div>
 
 
 
 
     return (
-        <div>
+        <div class="search_div">
             {search_sidebar}
+            {result_cards}
         </div>
 
     );
