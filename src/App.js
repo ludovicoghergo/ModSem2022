@@ -15,6 +15,7 @@ import Container from 'react-bootstrap/Container';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Docs from './routes/docs';
 import Home from './routes/home';
+import User from './routes/user';
 
 
 
@@ -61,6 +62,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="docs" element={<Docs />} />
+          <Route path="user/*" element={<User />} />
+
         </Routes>
       </BrowserRouter>,
     </div>

@@ -130,10 +130,11 @@ export default function Home() {
                 "PREFIX dd: <http://www.semanticweb.org/duckydoc#>" +
                 "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" +
                 "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-            let selectQuery = " SELECT ?doc ?nomedoc "
+            let selectQuery = " SELECT ?doc ?nomedoc ?user "
             let whereQuery = "WHERE { " +
                 "?doc rdf:type dd:File. " +
-                "?doc dd:name ?nomedoc. "
+                "?doc dd:name ?nomedoc. " +
+                "?user dd:load ?doc. "
             let havingQuery = ""
             let groupbyQuery = ""
             let revsQuery = revQuery(havingQuery, groupbyQuery, selectQuery)
@@ -141,7 +142,7 @@ export default function Home() {
             console.log(query + revsQuery[0] + whereQuery + userQuery() + schoolQuery() + cityQuery() + depQuery() + courseQuery() + professorQuery() + revsQuery[3] + "}" + revsQuery[1] + revsQuery[2])
             axios.get(`http://localhost:7200/repositories/provaludo?query=` + encodeURIComponent(query + revsQuery[0] + whereQuery + userQuery() + schoolQuery() + cityQuery() + depQuery() + courseQuery() + professorQuery() + revsQuery[3] + "}" + revsQuery[1] + revsQuery[2]))
                 .then(async (res) => {
-                    console.log(res.data.results.bindings)
+
                     for (let i = 0; i < res.data.results.bindings.length; i++) {
                         let name = res.data.results.bindings[i].nomedoc.value
                         let tags = []
@@ -157,16 +158,17 @@ export default function Home() {
                             "FILTER (?o != owl:NamedIndividual && ?o != prov:Entity ) .}"
 
                         const resp = await axios.get(`http://localhost:7200/repositories/provaludo?query=` + encodeURIComponent(SPECIFIC_URL))
-                        console.log(resp.data.results.bindings)
+                        let s = res.data.results.bindings[0].user.value
+                        s = s.substring(s.indexOf('#') + 1, s.length);
                         for (let j = 0; j < resp.data.results.bindings.length; j++) {
                             if (resp.data.results.bindings[j].name["xml:lang"] == 'en') {
                                 tags.push(resp.data.results.bindings[j].name.value)
-                                console.log(resp.data.results.bindings[j].name.value)
+
                             }
 
                         }
 
-                        myfiles.push({ name: name, tags: tags })
+                        myfiles.push({ name: name, tags: tags, author: s })
                     }
                     console.log(myfiles)
                     setdbData(myfiles)
@@ -279,6 +281,10 @@ export default function Home() {
                 <Card key={index}>
                     <Card.Body>
                         <Card.Title>{item.name}</Card.Title>
+                        <div className=" btn">
+                            <Badge bg="success" onClick={() => { window.location.replace('http://localhost:3000/user/?id=' + item.author); }}>{item.author}</Badge>
+                        </div>
+
                         <h6>
                             {item.tags.map((tag, index) => (
                                 <Badge className="m-1" bg="secondary"> {tag} </Badge>
