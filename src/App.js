@@ -15,8 +15,10 @@ import Container from 'react-bootstrap/Container';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Docs from './routes/docs';
 import Home from './routes/home';
-import User from './routes/user';
-
+import UserResult from './routes/userResult';
+import Users from './routes/Users';
+import Professors from './routes/Professors';
+import School from './routes/schoolResult';
 
 
 const myMenu =
@@ -27,18 +29,10 @@ const myMenu =
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="me-auto">
           <Nav.Link href="/docs">Documents</Nav.Link>
-          <Nav.Link href="#pricing">Users</Nav.Link>
-          <Nav.Link href="#pricing">Professors</Nav.Link>
+          <Nav.Link href="/users">Users</Nav.Link>
+          <Nav.Link href="/professors">Professors</Nav.Link>
         </Nav>
-        <Nav>
-          <NavDropdown title="More" id="collasible-nav-dropdown">
-            <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-            <NavDropdown.Divider />
-            <NavDropdown.Item href="#action/3.4">Admin</NavDropdown.Item>
-          </NavDropdown>
-        </Nav>
+
       </Navbar.Collapse>
     </Container>
   </Navbar>;
@@ -62,10 +56,13 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="docs" element={<Docs />} />
-          <Route path="user/*" element={<User />} />
+          <Route path="professors" element={<Professors />} />
+          <Route path="user/*" element={<UserResult />} />
+          <Route path='users' element={<Users />} />
+          <Route path='school/*' element={<School />} />
 
         </Routes>
-      </BrowserRouter>,
+      </BrowserRouter>
     </div>
   );
 }

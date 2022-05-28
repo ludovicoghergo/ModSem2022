@@ -1,8 +1,7 @@
 import '../docs.css'
 
 import Card from 'react-bootstrap/Card'
-import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
+
 import Badge from 'react-bootstrap/Badge'
 
 import React, { useState, useEffect, createRef, useRef, useCallback, useMemo } from 'react';
@@ -15,7 +14,7 @@ import { useSearchParams } from "react-router-dom";
 
 
 
-export default function User(props) {
+export default function UserResult(props) {
     const [searchParams, setSearchParams] = useSearchParams();
     const [dbData, setdbData] = useState([])
 
@@ -67,28 +66,28 @@ export default function User(props) {
 
 
     return (
-        <div >
-            <div id="result_side">
-                {dbData.map((item, index) => (
-                    <Card key={index}>
-                        <Card.Body>
-                            <Card.Title>{item.name}</Card.Title>
-                            <div className=" btn">
-                                <Badge bg="success" onClick={() => { window.location.replace('http://localhost:3000/user/?id=' + item.author); }}>{item.author}</Badge>
-                            </div>
+        <div style={{ width: '80%', margin: 'auto' }} >
+            <h1>{searchParams.get("id")}'s Posts</h1>
+            {dbData.map((item, index) => (
+                <Card key={index} >
+                    <Card.Body>
+                        <Card.Title>{item.name}</Card.Title>
+                        <div className=" btn">
+                            <Badge bg="success" onClick={() => { window.location.replace('http://localhost:3000/user/?id=' + item.author); }}>{item.author}</Badge>
+                        </div>
 
-                            <h6>
-                                {item.tags.map((tag, index) => (
-                                    <Badge className="m-1" bg="secondary"> {tag} </Badge>
-                                ))}
-                            </h6>
-                        </Card.Body>
-                    </Card>
-                ))
-                }
+                        <h6>
+                            {item.tags.map((tag, index) => (
+                                <Badge className="m-1" bg="secondary"> {tag} </Badge>
+                            ))}
+                        </h6>
+                    </Card.Body>
+                </Card>
+            ))
+            }
 
-            </div>
-        </div>
+
+        </ div>
 
     );
 }
