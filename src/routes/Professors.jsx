@@ -16,10 +16,17 @@ import Form from 'react-bootstrap/Form'
 
 
 export default function Professor(props) {
+    /**
+     **Dichiarazione di tutti gli stati del componente Home
+     */
     const [name, setname] = useState("")
     const [dbData, setdbData] = useState([])
 
-
+    /**
+     * *Esegue una ricerca basandosi sul prefisso di un nome di battesimo di un professore
+     * @returns i profili dei professori che soddifisnao i requisiti
+     * ? 'encodeURIComponent(query)' codifica la stringa nel formato richiesto da GraphDB
+     */
     function searchProfessor() {
 
         const query = "" +
@@ -51,7 +58,10 @@ export default function Professor(props) {
             })
     }
 
-
+    /**
+     * *contiene una casella di testo dove inserire il nome del professore cercato, seguita da una lista di risultati
+     * ?cliccando il nome della scuola verrà aperta una pagina cone le specifiche della scuola (query federata -> SchoolResult)
+     */
     return (
         <>
             <Form.Group className="mb-3 mt-5" style={{ display: 'flex', width: '80%', margin: 'auto' }}  >

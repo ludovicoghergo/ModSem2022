@@ -1,6 +1,13 @@
 import logo from './logo.svg';
 import './App.css';
 
+/**
+ * *ddd*
+ * !rosso!
+ * @param pippo ciao
+ * ?dopmanda?
+ * TODO: dddd 
+ */
 
 import {
   BrowserRouter,
@@ -20,6 +27,9 @@ import Users from './routes/Users';
 import Professors from './routes/Professors';
 import School from './routes/schoolResult';
 
+/**
+ * *Menu orizzontale che contiene le principali sezioni del sito : Documenti,Utenti,Professori*
+ */
 
 const myMenu =
   <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" id="home_nav">
@@ -28,7 +38,7 @@ const myMenu =
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="me-auto">
-          <Nav.Link href="/docs">Documents</Nav.Link>
+          <Nav.Link href="/">Documents</Nav.Link>
           <Nav.Link href="/users">Users</Nav.Link>
           <Nav.Link href="/professors">Professors</Nav.Link>
         </Nav>

@@ -14,9 +14,24 @@ import { useSearchParams } from "react-router-dom";
 
 
 export default function SchoolResult(props) {
+    /**
+     **Dichiarazione di tutti gli stati del componente Home
+     */
     const [searchParams, setSearchParams] = useSearchParams();
     const [dbData, setdbData] = useState([])
 
+    /**
+     * *Funzione che si occupa di ottenere da wikidata il nome, la città, il link al sito web-
+     * *e l'anno di creaione di una università.
+     * !IMPORTANTE: azione eseguita in useEffect([]) prima di andare a fare una qualsiasi ricerca-
+     * !dobbiamo controllare che sia stato passato l'id della scuola da cercare
+     * @var query_URL contiene la query federata che accede a wikidata per ottenere le informazioni rigurdante la scuola
+     * @var myFiles contien i risultati della risposta alla query da parte di GraphDB
+     * @var name nome del documento
+     * @var tags sono le classi a cui appartiene un determinato documento, permettono di essere a conoscenza di che tipo è un documento
+     * @return none; i risultati vengono salvati nello stato 'dbData' del componente 
+     * ? 'encodeURIComponent(query)' codifica la stringa nel formato richiesto da GraphDB
+     */
     useEffect(() => {
         if (searchParams !== null) {
             let query = "" +

@@ -22,7 +22,9 @@ import axios from 'axios';
 
 
 export default function Home() {
-
+    /**
+     **Dichiarazione di tutti gli stati del componente Home
+     */
     const [user, setuser] = useState("");
     const [school, setschool] = useState("");
     const [dep, setdep] = useState("");
@@ -31,11 +33,14 @@ export default function Home() {
     const [professor, setprofessor] = useState("");
     const [price, setprice] = useState(0);
     const [reviews, setreviews] = useState(0);
-
     const [dbData, setdbData] = useState([])
 
 
-
+    /**
+     * @var query è il valore della query che conterrà la stringa
+     * @var user è il valore associato al textbox 'nome utente' nel form
+     * @returns una stringa composta contenente la query in SPARQL per filtrare i documenti in base all'utente
+     */
     function userQuery() {
         let query = ""
         if (user != "") {
@@ -46,6 +51,11 @@ export default function Home() {
         return query
     }
 
+    /**
+     * @var query è il valore della query che conterrà la stringa
+     * @var user è il valore associato al textbox 'Scuola'
+     * @returns una stringa composta contenente la query in SPARQL  per filtrare i documenti in base alla scuola
+     */
     function schoolQuery() {
         let query = ""
         if (school != "") {
@@ -59,6 +69,11 @@ export default function Home() {
         return query
     }
 
+    /**
+     * @var query è il valore della query che conterrà la stringa
+     * @var dep è il valore associato al textbox 'Department'
+     * @returns una stringa composta contenente la query in SPARQL  per filtrare i documenti in base al dipartimento
+     */
     function depQuery() {
         let query = ""
         if (dep != "") {
@@ -71,6 +86,11 @@ export default function Home() {
         return query
     }
 
+    /**
+     * @var query è il valore della query che conterrà la stringa
+     * @var city è il valore associato al textbox 'City'
+     * @returns una stringa composta contenente la query in SPARQL  per filtrare i documenti in base alla città
+     */
     function cityQuery() {
         let query = ""
         if (city != "") {
@@ -85,6 +105,11 @@ export default function Home() {
         return query
     }
 
+    /**
+     * @var query è il valore della query che conterrà la stringa
+     * @var course è il valore associato al textbox 'Course'
+     * @returns una stringa composta contenente la query in SPARQL  per filtrare i documenti in base al corso
+     */
     function courseQuery() {
         let query = ""
         if (course != "") {
@@ -96,6 +121,11 @@ export default function Home() {
         return query
     }
 
+    /**
+     * @var query è il valore della query che conterrà la stringa
+     * @var user è il valore associato al textbox 'Professor'
+     * @returns una stringa composta contenente la query in SPARQL  per filtrare i documenti in base al professore del corso a cui appartiene il documento
+     */
     function professorQuery() {
         let query = ""
         if (professor != "") {
@@ -108,6 +138,12 @@ export default function Home() {
         return query
     }
 
+    /**
+     * @var query è il valore della query che conterrà la stringa
+     * @var reviews è il valore associato al radio button'reviews'
+     * @returns un'array contenente : stringa composta contenente la query in SPARQL, stringa composta per le istruzioni select, stringa composta per le istruzione having, stringa composta per le istruzione groupby
+     * !necessario aggiungere SelectQuery, GroupbyQuery e HavingbyQuery che contengono il valore delle due istruzioni da inserire a fine query
+     */
     function revQuery(havingQuery, groupbyQuery, selectQuery) {
         let query = ""
         if (reviews != "") {
@@ -123,7 +159,19 @@ export default function Home() {
     }
 
 
-
+    /**
+     * *Funzione che si occupa di riunire tutte le possibili query richieste dall'utente in un unica query composta
+     * * 2 query GET : la prima per ottenere i documenti, la seconda (per ogni documento) richiediamo le classi a cui appartiene (ossia i suoi tipi) e li salviamo in tags
+     * @var query contiene i prefissi necessari 
+     * @var selectQuery contiene la stringa che descrive l'istruzioen select, può essere alterata dalle funzioni (es. revQuery)
+     * @var whereQuery contiene la stringa che descrive la testa dell'istruzioen where (a noi è necessario solo IRI del documento, il suo nome e l'autore)
+     * @var groupbyQuery contiene la stringa che descrive l'istruzioen groupBY, può essere alterata dalle funzioni (es. revQuery)
+     * @var havingQuery contiene la stringa che descrive l'istruzioen Having, può essere alterata dalle funzioni (es. revQuery)
+     * @var myFiles contien i risultati della risposta alla query da parte di GraphDB
+     * @var name nome del documento
+     * @var tags sono le classi a cui appartiene un determinato documento, permettono di essere a conoscenza di che tipo è un documento
+     * @return none; i risultati vengon osalvati nello stato 'dbData' del componente 
+     */
     const compQuery =
         async () => {
             let query = "" +
@@ -158,7 +206,7 @@ export default function Home() {
                             "FILTER (?o != owl:NamedIndividual && ?o != prov:Entity ) .}"
 
                         const resp = await axios.get(`http://localhost:7200/repositories/provaludo?query=` + encodeURIComponent(SPECIFIC_URL))
-                        let s = res.data.results.bindings[0].user.value
+                        let s = res.data.results.bindings[i].user.value
                         s = s.substring(s.indexOf('#') + 1, s.length);
                         for (let j = 0; j < resp.data.results.bindings.length; j++) {
                             if (resp.data.results.bindings[j].name["xml:lang"] == 'en') {
@@ -178,7 +226,9 @@ export default function Home() {
                 )
         }
 
-
+    /**
+     * *Contiene il form con i campi di ricerca per i documenti
+     */
     const search_sidebar =
         <Card id="docs_sidebar">
             <Card.Img variant="top" />
@@ -274,7 +324,10 @@ export default function Home() {
             </Card.Body>
         </Card >;
 
-
+    /**
+     * *Mostra i risultati della ricerca basandosi su dbData
+     * ?premendo sul nome dell'autore viene aperta la pagina userResult con il valore dello user
+     */
     const result_cards =
         <div id="result_side">
             {dbData.map((item, index) => (
